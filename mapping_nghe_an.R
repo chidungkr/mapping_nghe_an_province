@@ -54,18 +54,34 @@ na_cen_lat <- na_df2 %>%
   group_by(id) %>% 
   summarise_each(funs(mean), lat)
 
-cen <- data.frame(long = na_cen_long$long, lat = na_cen_lat$lat)
+cen <- data.frame(long = na_cen_long$long, 
+                  lat = na_cen_lat$lat, 
+                  name = na$NAME_2 %>% unique())
 
 
 # Vẽ: 
 ggplot() + 
-  ggplot2::geom_polygon(data = na_df2, aes(x = long, y = lat, group = group, fill = id), 
+  geom_polygon(data = na_df2, aes(x = long, y = lat, group = group, fill = id), 
                color = "grey90", show.legend = FALSE, alpha = 0.7) +  
   geom_point(data = cen, aes(x = long, y = lat), size = 3, color = "red") + 
   labs(x = NULL, y = NULL, 
        title = "Map of Nghe An Province by District Level with Corresponding Centroids") + 
   theme_minimal()
   
+
+# Hoặc huyện nơi lớn lên của tôi là huyện Nghĩa Đàn: 
+library(ggrepel)
+
+ten <- na$NAME_2 %>% unique()
+
+ggplot() + 
+  geom_polygon(data = na_df2, aes(x = long, y = lat, group = group, fill = id), 
+               color = "grey90", show.legend = FALSE, alpha = 0.7) +  
+  geom_point(data = cen, aes(x = long, y = lat), size = 3, color = "red") + 
+  geom_text_repel(data = cen %>% filter(name == ten[9]), aes(long, lat), label = ten[9], force = 19) + 
+  labs(x = NULL, y = NULL, 
+       title = "Map of Nghe An Province by District Level with Corresponding Centroids") + 
+  theme_minimal()
 
 
 
